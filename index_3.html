@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InfraIntelligence — India Infrastructure & Land Regulatory Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0c0f0e;--bg2:#141918;--bg3:#1c2220;
+    --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+    --text:#e8ede9;--text2:#8a9e91;--text3:#4a5e52;
+    --green:#4eca7f;--green-dim:rgba(78,202,127,0.12);
+    --amber:#e8a94a;--coral:#e8644a;--coral-dim:rgba(232,100,74,0.1);
+    --purple:#9b8fdf;--purple-dim:rgba(155,143,223,0.1);--blue:#5ab4e0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{font-size:15px;}
+  body{background:var(--bg);color:var(--text);font-family:'Instrument Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+  /* ── TOPBAR ── */
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:52px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;background:rgba(12,15,14,0.96);backdrop-filter:blur(14px);}
+  .logo-wrap{display:flex;align-items:baseline;gap:0;}
+  .logo{font-family:'DM Serif Display',serif;font-size:19px;letter-spacing:-0.4px;color:var(--text);}
+  .logo em{font-style:italic;color:var(--green);}
+  .logo-tag{font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-left:9px;letter-spacing:0.7px;padding:2px 7px;border:1px solid var(--border2);border-radius:4px;}
+  .topbar-right{display:flex;align-items:center;gap:14px;}
+  .live-pill{display:flex;align-items:center;gap:6px;font-size:11px;font-family:'DM Mono',monospace;color:var(--green);background:var(--green-dim);padding:4px 10px;border-radius:20px;border:1px solid rgba(78,202,127,0.2);}
+  .live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 2s ease-in-out infinite;}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+  .scan-btn{font-size:12px;font-family:'Instrument Sans',sans-serif;padding:7px 16px;border-radius:6px;background:var(--green);color:#0a0d0c;font-weight:600;border:none;cursor:pointer;transition:opacity .2s;}
+  .scan-btn:hover{opacity:0.85;}.scan-btn:disabled{opacity:0.5;cursor:default;}
+
+  /* ── TAB NAV ── */
+  .tab-nav{display:flex;align-items:stretch;padding:0 28px;border-bottom:1px solid var(--border);background:var(--bg);gap:0;position:sticky;top:52px;z-index:99;}
+  .tab-btn{display:flex;align-items:center;gap:7px;padding:0 20px;height:42px;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap;position:relative;}
+  .tab-btn:hover{color:var(--text2);}
+  .tab-btn.active{color:var(--text);border-bottom-color:var(--green);}
+  .tab-icon{font-size:14px;opacity:0.7;}
+  .tab-btn.active .tab-icon{opacity:1;}
+  .tab-badge{font-size:9px;font-family:'DM Mono',monospace;background:var(--green-dim);color:var(--green);padding:1px 5px;border-radius:3px;border:1px solid rgba(78,202,127,0.2);}
+  .tab-coming{font-size:9px;font-family:'DM Mono',monospace;background:var(--bg3);color:var(--text3);padding:1px 6px;border-radius:3px;border:1px solid var(--border);}
+
+  /* ── TAB PANELS ── */
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  /* ── POLICY TRACKER PAGE ── */
+
+  /* Hero */
+  .hero{padding:24px 28px 18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-end;justify-content:space-between;gap:24px;}
+  .hero-left h1{font-family:'DM Serif Display',serif;font-size:28px;line-height:1.1;letter-spacing:-0.5px;max-width:500px;}
+  .hero-left h1 em{font-style:italic;color:var(--green);}
+  .hero-sub{margin-top:7px;font-size:12px;color:var(--text2);max-width:460px;line-height:1.6;}
+  .hero-stats{display:flex;gap:22px;flex-shrink:0;}
+  .hstat{text-align:right;}
+  .hstat-num{font-family:'DM Mono',monospace;font-size:25px;}
+  .hstat-label{font-size:10px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;}
+
+  /* Console */
+  .console-wrap{margin:13px 28px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+  .console-header{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:var(--bg3);border-bottom:1px solid var(--border);}
+  .console-title{font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);display:flex;align-items:center;gap:8px;}
+  .console-title::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--amber);}
+  .console-body{padding:10px 16px;font-family:'DM Mono',monospace;font-size:11px;line-height:1.8;color:var(--text2);min-height:48px;max-height:96px;overflow-y:auto;}
+  .log-line{opacity:0;animation:fadein 0.3s forwards;}
+  .log-line.ok{color:var(--green);}.log-line.info{color:var(--blue);}.log-line.warn{color:var(--amber);}
+  @keyframes fadein{to{opacity:1}}
+
+  /* 3-col layout */
+  .main-grid{display:grid;grid-template-columns:240px 1fr 292px;gap:0;padding:0 28px 40px;margin-top:16px;}
+
+  /* Left sidebar */
+  .sidebar{padding-right:18px;overflow-y:auto;max-height:calc(100vh - 240px);}
+  .sidebar::-webkit-scrollbar{width:3px;}.sidebar::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:2px;}
+  .sidebar-section{margin-bottom:22px;}
+  .sidebar-label{font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text3);margin-bottom:8px;font-weight:600;}
+  .filter-group{display:flex;flex-direction:column;gap:3px;}
+  .filter-item{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;border-radius:6px;font-size:12px;cursor:pointer;transition:background .15s;border:1px solid transparent;}
+  .filter-item:hover{background:var(--bg3);}.filter-item.active{background:var(--bg3);border-color:var(--border2);}
+  .filter-count{font-family:'DM Mono',monospace;font-size:10px;background:var(--bg3);padding:1px 6px;border-radius:4px;color:var(--text3);}
+  .filter-item.active .filter-count{background:var(--bg2);}
+  .dot-leg{color:var(--coral);}.dot-exec{color:var(--green);}.dot-jud{color:var(--purple);}
+  /* Date filter */
+  .date-filters{display:flex;flex-direction:column;gap:6px;}
+  .date-row{display:flex;gap:5px;}
+  .date-select{flex:1;background:var(--bg3);border:1px solid var(--border2);color:var(--text2);border-radius:5px;padding:5px 8px;font-size:11px;font-family:'DM Mono',monospace;cursor:pointer;appearance:none;-webkit-appearance:none;}
+  .date-select:focus{outline:none;border-color:var(--green);}
+  .date-clear{font-size:10px;color:var(--text3);background:none;border:1px solid var(--border);border-radius:5px;padding:5px 9px;cursor:pointer;font-family:'DM Mono',monospace;white-space:nowrap;}
+  .date-clear:hover{color:var(--text2);}
+  .date-active-label{font-size:10px;color:var(--amber);font-family:'DM Mono',monospace;min-height:16px;}
+  /* States */
+  .state-list{display:flex;flex-direction:column;gap:1px;}
+  .state-item{display:flex;align-items:center;justify-content:space-between;padding:4px 8px;border-radius:5px;font-size:11px;cursor:pointer;color:var(--text2);transition:all .12s;}
+  .state-item:hover,.state-item.active{color:var(--text);background:var(--bg3);}
+  .state-item.zero{opacity:0.32;pointer-events:none;}
+  .si-right{display:flex;align-items:center;gap:6px;}
+  .si-count{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);min-width:16px;text-align:right;}
+  .si-bar-wrap{width:32px;height:2px;background:var(--bg3);border-radius:2px;overflow:hidden;}
+  .si-bar{height:100%;background:var(--green);border-radius:2px;}
+
+  /* Feed */
+  .feed-col{padding:0 20px;border-left:1px solid var(--border);border-right:1px solid var(--border);}
+  .feed-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .feed-title{font-size:13px;font-weight:600;color:var(--text);}
+  .feed-sort{font-size:11px;color:var(--text2);font-family:'DM Mono',monospace;background:var(--bg2);border:1px solid var(--border2);padding:4px 10px;border-radius:5px;cursor:pointer;}
+  .feed{display:flex;flex-direction:column;}
+  .entry{padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:padding-left .12s;}
+  .entry:hover{padding-left:6px;}
+  .entry-top{display:flex;align-items:flex-start;gap:10px;}
+  .type-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+  .td-leg{background:var(--coral);}.td-exec{background:var(--green);}.td-jud{background:var(--purple);}
+  .entry-title{font-size:13px;font-weight:500;line-height:1.45;color:var(--text);flex:1;}
+  .entry-meta{display:flex;align-items:center;gap:8px;margin-top:5px;padding-left:17px;font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;flex-wrap:wrap;}
+  .entry-state{color:var(--text2);background:var(--bg3);padding:1px 7px;border-radius:4px;}
+  .entry-type-label{font-size:10px;text-transform:uppercase;letter-spacing:0.4px;padding:1px 7px;border-radius:4px;}
+  .tl-leg{background:var(--coral-dim);color:var(--coral);}
+  .tl-exec{background:var(--green-dim);color:var(--green);}
+  .tl-jud{background:var(--purple-dim);color:var(--purple);}
+  .entry-summary{font-size:12px;color:var(--text2);line-height:1.6;margin-top:8px;padding-left:17px;display:none;max-width:520px;}
+  .entry-source-row{display:none;margin-top:6px;padding-left:17px;align-items:center;gap:6px;}
+  .entry.open .entry-summary{display:block;}
+  .entry.open .entry-source-row{display:flex;}
+  .source-link{font-size:11px;color:var(--blue);font-family:'DM Mono',monospace;text-decoration:none;border-bottom:1px solid rgba(90,180,224,0.3);transition:all .15s;}
+  .source-link:hover{color:#8ddcf8;border-bottom-color:rgba(90,180,224,0.7);}
+  .source-arrow{font-size:10px;color:var(--text3);}
+  .new-badge{font-size:9px;background:var(--green-dim);color:var(--green);padding:1px 5px;border-radius:3px;font-family:'DM Mono',monospace;border:1px solid rgba(78,202,127,0.2);vertical-align:middle;margin-left:4px;}
+  .empty-msg{text-align:center;padding:40px 0;color:var(--text3);font-size:13px;}
+
+  /* Right panel */
+  .right-panel{padding-left:20px;overflow-y:auto;max-height:calc(100vh - 240px);}
+  .right-panel::-webkit-scrollbar{width:3px;}.right-panel::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:2px;}
+  .rp-section{margin-bottom:20px;}
+  .rp-label{font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text3);margin-bottom:9px;font-weight:600;}
+  .dash-stats{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:20px;}
+  .dash-stat{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;}
+  .ds-num{font-family:'DM Mono',monospace;font-size:21px;font-weight:500;}
+  .ds-label{font-size:10px;color:var(--text3);margin-top:2px;}
+  .ds-sub{font-size:10px;font-family:'DM Mono',monospace;margin-top:4px;color:var(--green);}
+  .breakdown-bar{height:8px;border-radius:4px;overflow:hidden;display:flex;gap:2px;margin-bottom:10px;}
+  .bb-leg{background:var(--coral);}.bb-exec{background:var(--green);}.bb-jud{background:var(--purple);}
+  .breakdown-legend{display:flex;flex-direction:column;gap:4px;}
+  .bl-item{display:flex;align-items:center;justify-content:space-between;font-size:12px;padding:5px 8px;border-radius:5px;cursor:pointer;transition:background .15s;}
+  .bl-item:hover,.bl-item.bl-active{background:var(--bg2);}
+  .bl-dot{width:7px;height:7px;border-radius:50%;margin-right:7px;flex-shrink:0;}
+  .bl-label{display:flex;align-items:center;color:var(--text2);}
+  .bl-right{display:flex;align-items:center;gap:8px;}
+  .bl-bar-wrap{width:38px;height:3px;background:var(--bg3);border-radius:2px;overflow:hidden;}
+  .bl-bar{height:100%;border-radius:2px;}
+  .bl-pct{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);min-width:36px;text-align:right;}
+  .state-spotlight{display:flex;flex-direction:column;gap:5px;}
+  .ss-item{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;cursor:pointer;transition:border-color .15s;}
+  .ss-item:hover{border-color:var(--border2);}
+  .ss-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+  .ss-name{font-size:12px;font-weight:500;color:var(--text);}
+  .ss-total{font-family:'DM Mono',monospace;font-size:13px;color:var(--text);}
+  .ss-pips{display:flex;gap:2px;margin-bottom:4px;}
+  .ss-pip{height:4px;border-radius:2px;}
+  .ss-leg{background:var(--coral);}.ss-exec{background:var(--green);}.ss-jud{background:var(--purple);}
+  .ss-legend{display:flex;gap:8px;}
+  .ss-leg-item{font-size:10px;font-family:'DM Mono',monospace;}
+  .activity-list{display:flex;flex-direction:column;}
+  .act-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:11px;}
+  .act-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+  .act-text{color:var(--text2);line-height:1.4;flex:1;}
+  .act-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);flex-shrink:0;}
+  .source-grid{display:flex;flex-direction:column;gap:4px;}
+  .source-item{display:flex;align-items:center;justify-content:space-between;padding:5px 9px;background:var(--bg2);border-radius:5px;font-size:11px;}
+  .src-left{display:flex;align-items:center;gap:7px;}
+  .src-dot{width:5px;height:5px;border-radius:50%;}
+  .src-ok{background:var(--green);}.src-warn{background:var(--amber);}
+  .src-name{color:var(--text2);font-family:'DM Mono',monospace;}
+  .src-count{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);}
+
+  /* ── INTERACTIVE TOOL PAGE ── */
+  .it-page{padding:60px 28px 40px;display:flex;flex-direction:column;align-items:center;min-height:calc(100vh - 96px);}
+  .it-center{max-width:560px;width:100%;text-align:center;}
+  .it-icon{font-size:48px;margin-bottom:24px;opacity:0.5;}
+  .it-title{font-family:'DM Serif Display',serif;font-size:26px;letter-spacing:-0.4px;color:var(--text);margin-bottom:12px;}
+  .it-title em{font-style:italic;color:var(--green);}
+  .it-sub{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:36px;}
+  .it-modules{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:32px;text-align:left;}
+  .it-module{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px 18px;position:relative;overflow:hidden;}
+  .it-module::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--green);opacity:0.3;}
+  .it-module-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;}
+  .it-module-desc{font-size:11px;color:var(--text3);line-height:1.5;}
+  .it-module-tag{margin-top:10px;display:inline-block;font-size:9px;font-family:'DM Mono',monospace;color:var(--text3);background:var(--bg3);padding:2px 7px;border-radius:4px;border:1px solid var(--border);}
+  .it-notify{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:12px 16px;font-size:12px;color:var(--text2);}
+  .it-notify-dot{width:6px;height:6px;border-radius:50%;background:var(--amber);flex-shrink:0;animation:blink 2s ease-in-out infinite;}
+
+  /* SCAN OVERLAY */
+  .scan-overlay{position:fixed;inset:0;background:rgba(12,15,14,0.87);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .3s;}
+  .scan-overlay.active{opacity:1;pointer-events:all;}
+  .scan-modal{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:26px 30px;width:420px;}
+  .scan-modal-title{font-family:'Instrument Sans',sans-serif;font-size:15px;font-weight:600;margin-bottom:14px;color:var(--text);display:flex;align-items:center;gap:8px;}
+  .sp-step{display:flex;align-items:center;gap:10px;font-size:11px;padding:5px 0;border-bottom:1px solid var(--border);color:var(--text3);font-family:'DM Mono',monospace;transition:color .3s;}
+  .sp-step.done{color:var(--green);}.sp-step.running{color:var(--amber);}
+  .sp-icon{font-size:12px;width:16px;text-align:center;}
+  .scan-close{margin-top:14px;width:100%;padding:9px;border-radius:6px;background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:12px;cursor:pointer;font-family:'Instrument Sans',sans-serif;}
+  .scan-close:hover{background:var(--border2);}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<nav class="topbar">
+  <div class="logo-wrap">
+    <div class="logo">Infra<em>Intelligence</em></div>
+    <span class="logo-tag">INDIA · DEMO</span>
+  </div>
+  <div class="topbar-right">
+    <div class="live-pill"><div class="live-dot"></div>LIVE · Last scan 06:30 IST</div>
+    <button class="scan-btn" id="scanBtn" onclick="startScan()">▶ Run Agent Scan</button>
+  </div>
+</nav>
+
+<!-- TAB NAV -->
+<div class="tab-nav">
+  <button class="tab-btn active" id="tab-policy" onclick="switchTab('policy')">
+    <span class="tab-icon">📋</span>
+    Policy Tracker
+    <span class="tab-badge">LIVE</span>
+  </button>
+  <button class="tab-btn" id="tab-interactive" onclick="switchTab('interactive')">
+    <span class="tab-icon">⚡</span>
+    Interactive Tool
+    <span class="tab-coming">COMING SOON</span>
+  </button>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  TAB 1 — POLICY TRACKER               -->
+<!-- ═══════════════════════════════════════ -->
+<div class="tab-panel active" id="panel-policy">
+
+  <div class="hero">
+    <div class="hero-left">
+      <h1>India's land sector,<br><em>watched in real time.</em></h1>
+      <p class="hero-sub">AI agent monitors government gazettes, High Courts, ministry circulars &amp; legal media across all 28 states — classifying every regulatory change as it happens.</p>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-num" id="stat-total">14</div><div class="hstat-label">Changes tracked</div></div>
+      <div class="hstat"><div class="hstat-num" id="stat-states">12</div><div class="hstat-label">States active</div></div>
+      <div class="hstat"><div class="hstat-num" id="stat-new">3</div><div class="hstat-label">New today</div></div>
+    </div>
+  </div>
+
+  <div class="console-wrap">
+    <div class="console-header">
+      <div class="console-title">agent · scanning log</div>
+      <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace">DEMO MODE</div>
+    </div>
+    <div class="console-body" id="console">
+      <div class="log-line ok">✓ [06:30:01] Agent initialized · 8 sources configured</div>
+      <div class="log-line info">→ [06:30:04] Fetching egazzette.nic.in/central ... 12 notifications scanned</div>
+      <div class="log-line ok">✓ [06:30:08] Classified 3 land-sector items → [LEG:1, EXEC:2]</div>
+      <div class="log-line info">→ [06:30:11] Fetching livelaw.in/top-stories ... 34 articles scanned</div>
+      <div class="log-line ok">✓ [06:30:14] Classified 2 land judgments → [JUD:2]</div>
+      <div class="log-line ok">✓ [06:30:20] All sources scanned · 14 entries indexed · 3 new</div>
+    </div>
+  </div>
+
+  <div class="main-grid">
+
+    <!-- LEFT SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Change type</div>
+        <div class="filter-group">
+          <div class="filter-item active" id="fi-all" onclick="filterType('all',this)"><span>All changes</span><span class="filter-count" id="fc-all">14</span></div>
+          <div class="filter-item" id="fi-leg" onclick="filterType('leg',this)"><span><span class="dot-leg">● </span>Legislative</span><span class="filter-count" id="fc-leg">0</span></div>
+          <div class="filter-item" id="fi-exec" onclick="filterType('exec',this)"><span><span class="dot-exec">● </span>Executive</span><span class="filter-count" id="fc-exec">0</span></div>
+          <div class="filter-item" id="fi-jud" onclick="filterType('jud',this)"><span><span class="dot-jud">● </span>Judicial</span><span class="filter-count" id="fc-jud">0</span></div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-label">Date filter</div>
+        <div class="date-filters">
+          <div class="date-row">
+            <select class="date-select" id="df-year" onchange="applyDateFilter()">
+              <option value="">All years</option>
+              <option value="2025" selected>2025</option>
+              <option value="2024">2024</option>
+            </select>
+          </div>
+          <div class="date-row">
+            <select class="date-select" id="df-month" onchange="applyDateFilter()">
+              <option value="">All months</option>
+              <option value="01">January</option><option value="02">February</option>
+              <option value="03" selected>March</option><option value="04">April</option>
+              <option value="05">May</option><option value="06">June</option>
+              <option value="07">July</option><option value="08">August</option>
+              <option value="09">September</option><option value="10">October</option>
+              <option value="11">November</option><option value="12">December</option>
+            </select>
+          </div>
+          <div class="date-row">
+            <select class="date-select" id="df-day" onchange="applyDateFilter()"><option value="">All dates</option></select>
+            <button class="date-clear" onclick="clearDateFilter()">✕ Clear</button>
+          </div>
+          <div class="date-active-label" id="date-label"></div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-label">States <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0">(all 28)</span></div>
+        <div class="state-list" id="state-list"></div>
+      </div>
+    </div>
+
+    <!-- FEED -->
+    <div class="feed-col">
+      <div class="feed-header">
+        <div class="feed-title" id="feed-title">All regulatory changes</div>
+        <select class="feed-sort" onchange="sortFeed(this.value)">
+          <option value="date">Latest first</option>
+          <option value="state">By state</option>
+          <option value="type">By type</option>
+        </select>
+      </div>
+      <div class="feed" id="feed"></div>
+    </div>
+
+    <!-- RIGHT DASHBOARD -->
+    <div class="right-panel">
+      <div class="dash-stats" id="dash-stats"></div>
+      <div class="rp-section">
+        <div class="rp-label">Breakdown · click to filter</div>
+        <div class="breakdown-bar" id="breakdown-bar"></div>
+        <div class="breakdown-legend" id="breakdown-legend"></div>
+      </div>
+      <div class="rp-section">
+        <div class="rp-label">State spotlight · click to filter</div>
+        <div class="state-spotlight" id="state-spotlight"></div>
+      </div>
+      <div class="rp-section">
+        <div class="rp-label">Recent activity</div>
+        <div class="activity-list" id="activity-list"></div>
+      </div>
+      <div class="rp-section">
+        <div class="rp-label">Source monitor</div>
+        <div class="source-grid" id="source-grid"></div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /panel-policy -->
+
+
+<!-- ═══════════════════════════════════════ -->
+<!--  TAB 2 — INTERACTIVE TOOL             -->
+<!-- ═══════════════════════════════════════ -->
+<div class="tab-panel" id="panel-interactive">
+  <div class="it-page">
+    <div class="it-center">
+      <div class="it-icon">⚡</div>
+      <h2 class="it-title">Interactive <em>tools</em> coming soon.</h2>
+      <p class="it-sub">This workspace will host analytical tools built on top of the Policy Tracker data — letting you explore, compare, and model regulatory change across states and time periods.</p>
+
+      <div class="it-modules">
+        <div class="it-module">
+          <div class="it-module-name">State Comparison</div>
+          <div class="it-module-desc">Side-by-side regulatory activity across any two states over a selected time window.</div>
+          <span class="it-module-tag">PLANNED</span>
+        </div>
+        <div class="it-module">
+          <div class="it-module-name">Timeline Explorer</div>
+          <div class="it-module-desc">Visualise how a specific policy theme (e.g. land mutation, acquisition) has evolved since 2010.</div>
+          <span class="it-module-tag">PLANNED</span>
+        </div>
+        <div class="it-module">
+          <div class="it-module-name">Ask the Data</div>
+          <div class="it-module-desc">Natural language queries over the full regulatory database — powered by Claude.</div>
+          <span class="it-module-tag">PLANNED</span>
+        </div>
+        <div class="it-module">
+          <div class="it-module-name">Alert Builder</div>
+          <div class="it-module-desc">Set custom alerts for state + topic combinations. Get notified when the agent flags a match.</div>
+          <span class="it-module-tag">PLANNED</span>
+        </div>
+      </div>
+
+      <div class="it-notify">
+        <div class="it-notify-dot"></div>
+        <span>More tools will appear here as they are built. The Policy Tracker feed is the live data foundation for all of them.</span>
+      </div>
+    </div>
+  </div>
+</div><!-- /panel-interactive -->
+
+
+<!-- SCAN OVERLAY -->
+<div class="scan-overlay" id="scanOverlay">
+  <div class="scan-modal">
+    <div class="scan-modal-title">🤖 Agent scan running…</div>
+    <div id="scan-steps"></div>
+    <button class="scan-close" onclick="closeScan()">Close</button>
+  </div>
+</div>
+
+<script>
+/* ── TAB SWITCHING ── */
+function switchTab(tab){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('panel-'+tab).classList.add('active');
+  // show scan btn only on policy tab
+  document.getElementById('scanBtn').style.display = tab==='policy'?'':'none';
+}
+
+/* ── DATA ── */
+const ALL_STATES=['Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Delhi','Goa','Gujarat','Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab','Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal'];
+const SOURCES=[
+  {name:'egazzette.nic.in',status:'ok',count:5},
+  {name:'livelaw.in',status:'ok',count:4},
+  {name:'barandbench.com',status:'ok',count:3},
+  {name:'dolr.gov.in',status:'ok',count:2},
+  {name:'prsindia.org',status:'ok',count:2},
+  {name:'rajasthan.gov.in',status:'ok',count:1},
+  {name:'highcourtpatiala.nic.in',status:'warn',count:0},
+  {name:'tnlandreforms.gov.in',status:'ok',count:1},
+];
+let DATA=[
+  {id:1,type:'leg',state:'Rajasthan',date:'2025-03-15',isNew:true,title:'Rajasthan Land Revenue (Amendment) Act, 2025 passed in assembly',summary:'Amendments allow e-mutation of agricultural land titles without physical tehsil presence. Digitisation of khasra-khatauni records mandated within 180 days across all districts.',sourceLabel:'Rajasthan Gazette · 15 Mar 2025',sourceUrl:'https://rajasthan.gov.in/gazette'},
+  {id:2,type:'exec',state:'Uttar Pradesh',date:'2025-03-14',isNew:true,title:'UP Revenue Dept issues stamp duty exemption GO for SC/ST farmers',summary:'GO No. 1234/2025 exempts scheduled caste and tribe farmers from stamp duty on rural land purchases up to 5 acres. Effective immediately on production of caste certificate.',sourceLabel:'UP Revenue Department · 14 Mar 2025',sourceUrl:'https://revenue.up.gov.in'},
+  {id:3,type:'jud',state:'Telangana',date:'2025-03-13',isNew:true,title:'Telangana HC stays mandatory Dharani portal e-registration order',summary:'High Court stayed the GO making Dharani the sole agricultural land registration channel, directing review of grievance mechanisms. Next hearing 28 March 2025.',sourceLabel:'LiveLaw · 13 Mar 2025',sourceUrl:'https://livelaw.in/high-court/telangana-high-court'},
+  {id:4,type:'exec',state:'Maharashtra',date:'2025-03-11',isNew:false,title:'Maharashtra slashes ready reckoner rate revision to annual cycle',summary:'Revenue & Forest Dept circular mandates annual circle rate revision instead of biennial, effective FY 2025-26. Applies to all agricultural and non-agricultural land.',sourceLabel:'Maharashtra Revenue Dept · 11 Mar 2025',sourceUrl:'https://mahabhumi.gov.in'},
+  {id:5,type:'jud',state:'Karnataka',date:'2025-03-09',isNew:false,title:'Karnataka HC rules on land acquisition compensation methodology',summary:'Division bench held market value must be based on recent sale deeds within 2km radius, overturning reliance on collector assessments older than 3 years.',sourceLabel:'Bar & Bench · 9 Mar 2025',sourceUrl:'https://barandbench.com/news/high-court/karnataka'},
+  {id:6,type:'leg',state:'Madhya Pradesh',date:'2025-03-07',isNew:false,title:'MP Land Grabbing (Prohibition) Amendment Bill, 2025 introduced',summary:'Bill strengthens anti-land-grabbing provisions with penal consequences for government land encroachment and proposes fast-track special courts for dispossession cases.',sourceLabel:'PRS Legislative Research · 7 Mar 2025',sourceUrl:'https://prsindia.org/billtrack'},
+  {id:7,type:'exec',state:'Gujarat',date:'2025-03-05',isNew:false,title:'Gujarat DILR launches QR-coded 7/12 extract system statewide',summary:'Tamper-proof QR-coded Satbara Utara extracts now legally accepted for all land transactions, replacing physical taluk extracts across all 33 districts.',sourceLabel:'Gujarat DILR · 5 Mar 2025',sourceUrl:'https://anyror.gujarat.gov.in'},
+  {id:8,type:'jud',state:'Tamil Nadu',date:'2025-03-03',isNew:false,title:'Madras HC orders TNSLA resurvey of 14 districts under ULCA',summary:'Court directed resurvey of surplus lands vested but unoccupied under Urban Land Ceiling Act. Status report due within 3 months.',sourceLabel:'Madras HC Order · 3 Mar 2025',sourceUrl:'https://hcmadras.tn.nic.in'},
+  {id:9,type:'leg',state:'West Bengal',date:'2025-02-28',isNew:false,title:'West Bengal Tenancy Reforms (Amendment) Bill tabled',summary:'Bill revises ceiling limits for non-agricultural use under bargadari tenancy and introduces digital recording of oral tenancy arrangements for 1.8 million sharecroppers.',sourceLabel:'PRS Legislative Research · 28 Feb 2025',sourceUrl:'https://prsindia.org/billtrack'},
+  {id:10,type:'exec',state:'Haryana',date:'2025-02-26',isNew:false,title:'Haryana mandates drone-based girdawari in 6 pilot districts',summary:'Revenue Dept circular requires drone-based khasra demarcation. Results uploadable to Jamabandi portal and usable in revenue court disputes from April 2025.',sourceLabel:'Haryana Revenue Dept · 26 Feb 2025',sourceUrl:'https://jamabandi.nic.in'},
+  {id:11,type:'jud',state:'Punjab',date:'2025-02-22',isNew:false,title:'Punjab & Haryana HC on inheritance rights in joint family agricultural land',summary:'Full bench held that daughters have equal inheritance rights in joint Hindu family agricultural land in Punjab, overruling contrary precedent from 2018.',sourceLabel:'LiveLaw · 22 Feb 2025',sourceUrl:'https://livelaw.in/high-court/punjab-and-haryana-high-court'},
+  {id:12,type:'exec',state:'Odisha',date:'2025-02-20',isNew:false,title:'Odisha Revenue Dept notification on forest land title regularisation',summary:'State notification operationalises FRA 2006 individual title regularisation for 42,000 pending claims in tribal districts, with gram sabha verification required.',sourceLabel:'Odisha Revenue Dept · 20 Feb 2025',sourceUrl:'https://bhulekh.ori.nic.in'},
+  {id:13,type:'leg',state:'Assam',date:'2025-02-18',isNew:false,title:'Assam Land Revenue (Amendment) Ordinance promulgated',summary:'Ordinance amends settlement procedures for char and char chapori land in Brahmaputra floodplains, establishing 3-member district committees for adjudication.',sourceLabel:'Assam Gazette · 18 Feb 2025',sourceUrl:'https://gauhati.nic.in'},
+  {id:14,type:'exec',state:'Kerala',date:'2025-02-15',isNew:false,title:'Kerala issues circular on coastal zone land use change moratorium',summary:'Revenue Dept circular extends moratorium on conversion of agricultural land within 200m of Kerala coastline for 12 months pending Coastal Zone Management Plan revision.',sourceLabel:'Kerala Revenue Dept · 15 Feb 2025',sourceUrl:'https://revenue.kerala.gov.in'},
+];
+
+let currentType='all',currentState='',currentSort='date';
+let filterYear='2025',filterMonth='03',filterDay='';
+
+/* DATE */
+function buildDayOptions(){
+  const sel=document.getElementById('df-day'),y=document.getElementById('df-year').value,m=document.getElementById('df-month').value;
+  sel.innerHTML='<option value="">All dates</option>';
+  if(!y||!m)return;
+  const days=new Date(+y,+m,0).getDate();
+  for(let d=1;d<=days;d++){const v=String(d).padStart(2,'0');const o=document.createElement('option');o.value=v;o.textContent=d;if(v===filterDay)o.selected=true;sel.appendChild(o);}
+}
+function applyDateFilter(){
+  filterYear=document.getElementById('df-year').value;
+  filterMonth=document.getElementById('df-month').value;
+  filterDay=document.getElementById('df-day').value;
+  buildDayOptions();
+  const months=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  let lbl='';
+  if(filterDay&&filterMonth&&filterYear)lbl=filterDay+' '+months[+filterMonth]+' '+filterYear;
+  else if(filterMonth&&filterYear)lbl=months[+filterMonth]+' '+filterYear;
+  else if(filterYear)lbl=filterYear;
+  document.getElementById('date-label').textContent=lbl?'⌛ Showing: '+lbl:'';
+  renderFeed();renderDashboard();
+}
+function clearDateFilter(){
+  filterYear='';filterMonth='';filterDay='';
+  document.getElementById('df-year').value='';
+  document.getElementById('df-month').value='';
+  document.getElementById('df-day').innerHTML='<option value="">All dates</option>';
+  document.getElementById('date-label').textContent='';
+  renderFeed();renderDashboard();
+}
+
+/* FILTER */
+function getFiltered(){
+  let d=[...DATA];
+  if(currentType!=='all')d=d.filter(x=>x.type===currentType);
+  if(currentState)d=d.filter(x=>x.state===currentState);
+  if(filterYear)d=d.filter(x=>x.date.startsWith(filterYear));
+  if(filterMonth)d=d.filter(x=>x.date.slice(5,7)===filterMonth);
+  if(filterDay)d=d.filter(x=>x.date.slice(8,10)===filterDay);
+  if(currentSort==='state')d.sort((a,b)=>a.state.localeCompare(b.state));
+  else if(currentSort==='type')d.sort((a,b)=>a.type.localeCompare(b.type));
+  else d.sort((a,b)=>b.date.localeCompare(a.date));
+  return d;
+}
+
+/* FEED */
+function renderFeed(){
+  const items=getFiltered(),feed=document.getElementById('feed');
+  if(!items.length){feed.innerHTML='<div class="empty-msg">No changes match current filters.</div>';return;}
+  feed.innerHTML=items.map(d=>`
+    <div class="entry" id="e${d.id}" onclick="toggleEntry(${d.id})">
+      <div class="entry-top">
+        <div class="type-dot td-${d.type}"></div>
+        <div class="entry-title">${d.title}${d.isNew?'<span class="new-badge">NEW</span>':''}</div>
+      </div>
+      <div class="entry-meta">
+        <span class="entry-state">${d.state}</span>
+        <span class="entry-type-label tl-${d.type}">${d.type==='leg'?'Legislative':d.type==='exec'?'Executive':'Judicial'}</span>
+        <span>${d.date}</span>
+      </div>
+      <div class="entry-summary">${d.summary}</div>
+      <div class="entry-source-row">
+        <span class="source-arrow">↳</span>
+        <a class="source-link" href="${d.sourceUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${d.sourceLabel} ↗</a>
+      </div>
+    </div>`).join('');
+}
+function toggleEntry(id){document.getElementById('e'+id).classList.toggle('open');}
+function filterType(t,el){
+  currentType=t;currentState='';
+  document.querySelectorAll('.filter-item').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.state-item').forEach(x=>x.classList.remove('active'));
+  const titles={all:'All regulatory changes',leg:'Legislative changes',exec:'Executive orders & circulars',jud:'Judicial orders'};
+  document.getElementById('feed-title').textContent=titles[t];
+  renderFeed();renderDashboard();
+}
+function filterState(state){
+  if(!state)return;
+  currentState=(currentState===state)?'':state;
+  document.querySelectorAll('.state-item').forEach(x=>x.classList.toggle('active',x.dataset.state===currentState));
+  document.getElementById('feed-title').textContent=currentState?currentState+' · changes':'All regulatory changes';
+  renderFeed();renderDashboard();
+}
+function sortFeed(v){currentSort=v;renderFeed();}
+
+/* STATE LIST */
+function renderStateList(){
+  const sc={};
+  DATA.forEach(d=>{if(!sc[d.state])sc[d.state]={total:0};sc[d.state].total++;});
+  const max=Math.max(...Object.values(sc).map(c=>c.total),1);
+  document.getElementById('state-list').innerHTML=ALL_STATES.map(s=>{
+    const c=sc[s]||{total:0},z=c.total===0;
+    return `<div class="state-item${z?' zero':''}" data-state="${s}" onclick="${z?'':'filterState(\''+s+'\')'}">
+      <span>${s}</span>
+      <div class="si-right">
+        <span class="si-count">${c.total||'0'}</span>
+        <div class="si-bar-wrap"><div class="si-bar" style="width:${z?0:(c.total/max*100).toFixed(0)}%"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* DASHBOARD */
+function renderDashboard(){
+  const all=DATA,filtered=getFiltered();
+  const leg=all.filter(x=>x.type==='leg').length,exec=all.filter(x=>x.type==='exec').length,jud=all.filter(x=>x.type==='jud').length,newc=all.filter(x=>x.isNew).length;
+  document.getElementById('fc-all').textContent=all.length;
+  document.getElementById('fc-leg').textContent=leg;
+  document.getElementById('fc-exec').textContent=exec;
+  document.getElementById('fc-jud').textContent=jud;
+  const activeStates=new Set(all.map(x=>x.state)).size;
+  document.getElementById('stat-total').textContent=all.length;
+  document.getElementById('stat-states').textContent=activeStates;
+  document.getElementById('stat-new').textContent=newc;
+  document.getElementById('dash-stats').innerHTML=[
+    {num:filtered.length,label:'Showing now',color:'var(--text)',sub:''},
+    {num:newc,label:'New today',color:'var(--green)',sub:'+'+newc+' since 00:00'},
+    {num:leg,label:'Legislative',color:'var(--coral)',sub:''},
+    {num:jud,label:'Judicial',color:'var(--purple)',sub:''},
+  ].map(s=>`<div class="dash-stat"><div class="ds-num" style="color:${s.color}">${s.num}</div><div class="ds-label">${s.label}</div>${s.sub?`<div class="ds-sub">${s.sub}</div>`:''}</div>`).join('');
+  const total=all.length||1;
+  document.getElementById('breakdown-bar').innerHTML=`<div class="bb-leg" style="width:${(leg/total*100).toFixed(0)}%"></div><div class="bb-exec" style="width:${(exec/total*100).toFixed(0)}%"></div><div class="bb-jud" style="width:${(jud/total*100).toFixed(0)}%"></div>`;
+  document.getElementById('breakdown-legend').innerHTML=[
+    {id:'leg',color:'var(--coral)',bar:'#e8644a',label:'Legislative',n:leg},
+    {id:'exec',color:'var(--green)',bar:'#4eca7f',label:'Executive',n:exec},
+    {id:'jud',color:'var(--purple)',bar:'#9b8fdf',label:'Judicial',n:jud},
+  ].map(x=>`<div class="bl-item${currentType===x.id?' bl-active':''}" onclick="filterType('${x.id}',document.getElementById('fi-${x.id}'))">
+    <div class="bl-label"><div class="bl-dot" style="background:${x.color}"></div>${x.label}</div>
+    <div class="bl-right"><div class="bl-bar-wrap"><div class="bl-bar" style="background:${x.bar};width:${(x.n/total*100).toFixed(0)}%"></div></div><span class="bl-pct">${x.n} · ${(x.n/total*100).toFixed(0)}%</span></div>
+  </div>`).join('');
+  const sc={};all.forEach(d=>{if(!sc[d.state])sc[d.state]={total:0,leg:0,exec:0,jud:0};sc[d.state].total++;sc[d.state][d.type]++;});
+  const top5=Object.entries(sc).sort((a,b)=>b[1].total-a[1].total).slice(0,5),maxS=top5[0]?top5[0][1].total:1;
+  document.getElementById('state-spotlight').innerHTML=top5.map(([s,c])=>`
+    <div class="ss-item" onclick="filterState('${s}')">
+      <div class="ss-top"><span class="ss-name">${s}</span><span class="ss-total">${c.total}</span></div>
+      <div class="ss-pips">
+        ${c.leg?`<div class="ss-pip ss-leg" style="width:${Math.max(c.leg/maxS*80,8).toFixed(0)}%"></div>`:''}
+        ${c.exec?`<div class="ss-pip ss-exec" style="width:${Math.max(c.exec/maxS*80,8).toFixed(0)}%"></div>`:''}
+        ${c.jud?`<div class="ss-pip ss-jud" style="width:${Math.max(c.jud/maxS*80,8).toFixed(0)}%"></div>`:''}
+      </div>
+      <div class="ss-legend">
+        ${c.leg?`<span class="ss-leg-item" style="color:var(--coral)">${c.leg} leg</span>`:''}
+        ${c.exec?`<span class="ss-leg-item" style="color:var(--green)">${c.exec} exec</span>`:''}
+        ${c.jud?`<span class="ss-leg-item" style="color:var(--purple)">${c.jud} jud</span>`:''}
+      </div>
+    </div>`).join('');
+  const recent=[...all].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,6);
+  const typeColor={leg:'var(--coral)',exec:'var(--green)',jud:'var(--purple)'};
+  const ago=d=>{const diff=Math.floor((new Date('2025-03-16')-new Date(d))/86400000);return diff===0?'today':diff===1?'1d ago':diff+'d ago';};
+  document.getElementById('activity-list').innerHTML=recent.map(d=>`
+    <div class="act-item">
+      <div class="act-dot" style="background:${typeColor[d.type]}"></div>
+      <div class="act-text"><b style="color:var(--text);font-weight:500">${d.state}</b> · ${d.title.slice(0,48)}…</div>
+      <div class="act-time">${ago(d.date)}</div>
+    </div>`).join('');
+  document.getElementById('source-grid').innerHTML=SOURCES.map(s=>`
+    <div class="source-item">
+      <div class="src-left"><div class="src-dot src-${s.status}"></div><span class="src-name">${s.name}</span></div>
+      <span class="src-count">${s.count} items</span>
+    </div>`).join('');
+}
+
+/* SCAN */
+const SCAN_STEPS=[
+  {label:'Initialising agent · loading source config',delay:0},
+  {label:'Fetching egazzette.nic.in ...',delay:800},
+  {label:'Classifying gazette items with Claude API ...',delay:1700},
+  {label:'Fetching livelaw.in/top-stories ...',delay:2500},
+  {label:'Fetching barandbench.com ...',delay:3300},
+  {label:'Classifying land-sector judicial orders ...',delay:4100},
+  {label:'Fetching state revenue department portals ...',delay:4900},
+  {label:'Deduplicating · merging into index ...',delay:5700},
+  {label:'✓ Scan complete · 1 new item detected',delay:6400,done:true},
+];
+function startScan(){
+  const btn=document.getElementById('scanBtn');
+  btn.disabled=true;btn.textContent='⏳ Scanning…';
+  document.getElementById('scanOverlay').classList.add('active');
+  document.getElementById('scan-steps').innerHTML=SCAN_STEPS.map((s,i)=>`<div class="sp-step" id="ss${i}"><span class="sp-icon">○</span>${s.label}</div>`).join('');
+  SCAN_STEPS.forEach((s,i)=>{setTimeout(()=>{
+    if(i>0){const p=document.getElementById('ss'+(i-1));if(p){p.classList.remove('running');p.classList.add('done');p.querySelector('.sp-icon').textContent='✓';}}
+    const el=document.getElementById('ss'+i);if(el){el.classList.add(s.done?'done':'running');el.querySelector('.sp-icon').textContent=s.done?'✓':'›';}
+  },s.delay);});
+  setTimeout(()=>{
+    btn.disabled=false;btn.textContent='▶ Run Agent Scan';
+    DATA.unshift({id:99,type:'exec',state:'Delhi',date:'2025-03-16',isNew:true,
+      title:'Delhi Govt. revises circle rates for South Delhi residential zones',
+      summary:'Revenue Dept notification revises collector rates for South Delhi residential plots by 8–12%. Applicable to all registrations effective 16 March 2025.',
+      sourceLabel:'Delhi Revenue Dept · 16 Mar 2025',sourceUrl:'https://revenue.delhi.gov.in'});
+    SOURCES[0].count++;
+    renderFeed();renderStateList();renderDashboard();
+  },7200);
+}
+function closeScan(){document.getElementById('scanOverlay').classList.remove('active');}
+
+/* INIT */
+buildDayOptions();
+renderFeed();
+renderStateList();
+renderDashboard();
+</script>
+</body>
+</html>
